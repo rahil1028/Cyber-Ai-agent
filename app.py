@@ -53,11 +53,10 @@ if not firebase_admin._apps:
 
     cred = credentials.Certificate(service_account_data)
     firebase_admin.initialize_app(cred)
-            "Firebase service account credentials could not be loaded."
-        )
+            
+        
 
-    cred = credentials.Certificate(service_account_data)
-    firebase_admin.initialize_app(cred)
+    
 
 
 db = firestore.client()
@@ -83,9 +82,7 @@ MODEL = os.environ.get(
 
 # ============================================================
 # FRONTEND
-# ============================================================
-
-HTML = r"""<!doctype html>
+# ==========================================================hoctype html>
 <html>
 <head>
 
