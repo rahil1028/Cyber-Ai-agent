@@ -975,10 +975,7 @@ def analyze():
         ), 503
 
 
-    data =
-        request.get_json(
-            silent=True
-        ) or {}
+    data = request.get_json(silent=True) or {}
 
 
     prompt =
