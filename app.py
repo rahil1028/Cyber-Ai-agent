@@ -925,11 +925,7 @@ def user_required(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
 
-        header =
-            request.headers.get(
-                "Authorization",
-                ""
-            )
+        header = request.headers.get("Authorization", "")
 
         try:
 
@@ -945,8 +941,7 @@ def user_required(function):
             token = header[7:]
 
 
-            request.user =
-                auth.verify_id_token(token)
+            request.user = auth.verify_id_token(token)
 
 
             return function(
