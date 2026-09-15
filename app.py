@@ -1021,8 +1021,7 @@ Remediation
 
     try:
 
-        result =
-            gemini.models.generate_content(
+        result = gemini.models.generate_content(
                 model=MODEL,
                 contents=
                     system +
@@ -1032,7 +1031,7 @@ Remediation
 
 
         answer =
-            result.text or "No response."
+            answer = result.text or "No response."
 
 
         reference = (
