@@ -2,13 +2,14 @@ import os
 from functools import wraps
 from flask import Flask, request, jsonify, Response
 import firebase_admin
-from firebase_admin import auth, firestore
+from firebase_admin import auth, firestore, credentials
 from google import genai
 
 app = Flask(__name__)
 
 if not firebase_admin._apps:
-    firebase_admin.initialize_app()
+    cred = credentials.Certificate("/etc/secrets/firebase-service-account.json")
+    firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 gemini = genai.Client(api_key=os.environ["GEMINI_API_KEY"]) if os.environ.get("GEMINI_API_KEY") else None
