@@ -1,44 +1,34 @@
 import os
+import json
 from functools import wraps
-
 from flask import Flask, request, jsonify, Response
 import firebase_admin
 from firebase_admin import auth, firestore, credentials
 from google import genai
 
-
 app = Flask(__name__)
 
 
 # ============================================================
-# FIREBASE ADMIN INITIALIZATION
-# Uses Render environment variables instead of the broken
-# /etc/secrets/firebase-service-account.json file.
+# FIREBASE ADMIN
 # ============================================================
 
 if not firebase_admin._apps:
-    project_id = os.environ.get("FIREBASE_PROJECT_ID")
-    client_email = os.environ.get("FIREBASE_CLIENT_EMAIL")
-    private_key = os.environ.get("FIREBASE_PRIVATE_KEY")
+    service_account_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
 
-    if not project_id or not client_email or not private_key:
+    if not service_account_json:
         raise RuntimeError(
-            "Missing Firebase Admin environment variables. "
-            "Required: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, "
-            "FIREBASE_PRIVATE_KEY"
+            "FIREBASE_SERVICE_ACCOUNT environment variable is missing"
         )
 
-    private_key = private_key.replace("\\n", "\n")
+    try:
+        service_account_data = json.loads(service_account_json)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(
+            f"Invalid FIREBASE_SERVICE_ACCOUNT JSON: {e}"
+        )
 
-    firebase_credential = {
-        "type": "service_account",
-        "project_id": project_id,
-        "private_key": private_key,
-        "client_email": client_email,
-        "token_uri": "https://oauth2.googleapis.com/token",
-    }
-
-    cred = credentials.Certificate(firebase_credential)
+    cred = credentials.Certificate(service_account_data)
     firebase_admin.initialize_app(cred)
 
 
@@ -88,10 +78,6 @@ body{
 .logo{
     font-size:22px;
     font-weight:800
-}
-
-.logo b{
-    color:#6c63ff
 }
 
 .badge{
@@ -230,11 +216,9 @@ pre{
     <span class="badge">Powered by Gemini</span>
 </div>
 
-
 <section id="landing" class="hero">
 
 <div>
-
 <span class="badge">DEFENSIVE SECURITY COPILOT</span>
 
 <h1>
@@ -248,21 +232,14 @@ structure manual testing, and get practical remediation guidance.
 </p>
 
 <button onclick="showAuth()">Get Started →</button>
-
 </div>
 
-<div class="card shield">
-🛡️
-</div>
+<div class="card shield">🛡️</div>
 
 </section>
 
 
-<section
-    id="auth"
-    class="card hidden"
-    style="max-width:520px;margin:40px auto"
->
+<section id="auth" class="card hidden" style="max-width:520px;margin:40px auto">
 
 <h2>Welcome to CyberLens AI</h2>
 
@@ -270,27 +247,15 @@ structure manual testing, and get practical remediation guidance.
 Sign in to keep your private security analysis history.
 </p>
 
-<input
-    id="email"
-    type="email"
-    placeholder="Email address"
->
+<input id="email" type="email" placeholder="Email address">
 
-<input
-    id="pw"
-    type="password"
-    placeholder="Password (6+ characters)"
->
+<input id="pw" type="password" placeholder="Password (6+ characters)">
 
 <div class="row">
 
-<button onclick="signup()">
-Create account
-</button>
+<button onclick="signup()">Create account</button>
 
-<button class="alt" onclick="login()">
-Sign in
-</button>
+<button class="alt" onclick="login()">Sign in</button>
 
 </div>
 
@@ -301,22 +266,14 @@ Sign in
 
 <section id="app" class="hidden">
 
-<div
-    class="row"
-    style="justify-content:space-between;align-items:center"
->
+<div class="row" style="justify-content:space-between;align-items:center">
 
 <div>
-
 <h2>AI Security Assistant</h2>
-
 <span class="muted" id="who"></span>
-
 </div>
 
-<button class="alt" onclick="logout()">
-Sign out
-</button>
+<button class="alt" onclick="logout()">Sign out</button>
 
 </div>
 
@@ -324,23 +281,18 @@ Sign out
 <div class="card" style="margin-top:15px">
 
 <textarea
-    id="q"
-    rows="7"
-    placeholder="Example: How should I manually test a web app for broken access control in an authorized lab?"
+id="q"
+rows="7"
+placeholder="Example: How should I manually test a web app for broken access control in an authorized lab?"
 ></textarea>
 
-<div
-    class="row"
-    style="justify-content:space-between;align-items:center"
->
+<div class="row" style="justify-content:space-between;align-items:center">
 
 <span class="muted">
 Authorized / defensive testing only
 </span>
 
-<button onclick="analyze()">
-Analyze with Gemini
-</button>
+<button onclick="analyze()">Analyze with Gemini</button>
 
 </div>
 
@@ -668,23 +620,23 @@ def home():
 @app.get("/config")
 def config():
 
-    required = [
+    keys = [
         "FIREBASE_API_KEY",
         "FIREBASE_AUTH_DOMAIN",
         "FIREBASE_PROJECT_ID",
         "FIREBASE_STORAGE_BUCKET",
         "FIREBASE_MESSAGING_SENDER_ID",
-        "FIREBASE_APP_ID",
+        "FIREBASE_APP_ID"
     ]
 
     return jsonify({
         key: os.environ.get(key, "")
-        for key in required
+        for key in keys
     })
 
 
 # ============================================================
-# AUTH DECORATOR
+# AUTHENTICATION
 # ============================================================
 
 def user_required(function):
@@ -723,7 +675,6 @@ def user_required(function):
 def analyze():
 
     if not gemini:
-
         return jsonify(
             error="Gemini is not configured"
         ), 503
@@ -735,7 +686,6 @@ def analyze():
     ).strip()
 
     if not prompt:
-
         return jsonify(
             error="Enter a scenario"
         ), 400
@@ -863,14 +813,12 @@ def get_history():
 
 
 # ============================================================
-# LOCAL DEVELOPMENT
+# START SERVER
 # ============================================================
 
 if __name__ == "__main__":
 
     app.run(
         host="0.0.0.0",
-        port=int(
-            os.environ.get("PORT", 8080)
-        )
+        port=int(os.environ.get("PORT", 8080))
     )
