@@ -978,13 +978,7 @@ def analyze():
     data = request.get_json(silent=True) or {}
 
 
-    prompt =
-        str(
-            data.get(
-                "prompt",
-                ""
-            )
-        ).strip()
+    prompt = str(data.get("prompt", "")).strip()
 
 
     if not prompt:
