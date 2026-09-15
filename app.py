@@ -18,19 +18,25 @@ app = Flask(__name__)
 if not firebase_admin._apps:
 
     service_account_data = None
+if not firebase_admin._apps:
+    service_account_data = None
 
-    # First: try Render Environment Variable
-    service_account_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
+    # Try Render Environment Variable
+    service_account_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
 
     if service_account_json:
         try:
             service_account_data = json.loads(service_account_json)
+
+            # Handle accidentally double-encoded JSON
+            if isinstance(service_account_data, str):
+                service_account_data = json.loads(service_account_data)
+
         except (json.JSONDecodeError, TypeError):
             service_account_data = None
 
-    # Second: try Render Secret File
+    # Try Render Secret File if environment variable failed
     if service_account_data is None:
-
         secret_file = "/etc/secrets/firebase-service-account.json"
 
         if os.path.exists(secret_file):
@@ -40,9 +46,13 @@ if not firebase_admin._apps:
             except (json.JSONDecodeError, OSError):
                 service_account_data = None
 
-    # If neither source worked
     if service_account_data is None:
         raise RuntimeError(
+            "Firebase service account credentials could not be loaded."
+        )
+
+    cred = credentials.Certificate(service_account_data)
+    firebase_admin.initialize_app(cred)
             "Firebase service account credentials could not be loaded."
         )
 
