@@ -336,6 +336,173 @@ pre{
     cursor:wait !important;
     transform:scale(.98);
 }
+.scan-card{
+    margin:18px 0 16px;
+    padding:22px;
+    border:1px solid rgba(82,184,255,.20);
+    border-radius:22px;
+    background:
+        linear-gradient(135deg,rgba(17,31,58,.92),rgba(8,17,36,.96));
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+.scan-card-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:18px;
+    margin-bottom:20px;
+}
+
+.scan-eyebrow{
+    display:inline-block;
+    margin-bottom:7px;
+    color:#72c8ff;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:1.2px;
+}
+
+.scan-card h3{
+    margin:0 0 7px;
+    font-size:21px;
+}
+
+.scan-card p{
+    margin:0;
+    color:#91a8c4;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.scan-status{
+    padding:6px 10px;
+    border:1px solid rgba(82,184,255,.25);
+    border-radius:999px;
+    color:#72c8ff;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.8px;
+}
+
+.scan-label{
+    display:block;
+    margin-bottom:7px;
+    color:#b8c9dc;
+    font-size:12px;
+    font-weight:700;
+}
+
+#scanTarget,
+#scanProfile{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid rgba(82,184,255,.18);
+    border-radius:12px;
+    background:rgba(4,12,27,.72);
+    color:#eaf5ff;
+    padding:13px 14px;
+    outline:none;
+}
+
+#scanTarget:focus,
+#scanProfile:focus{
+    border-color:rgba(82,184,255,.65);
+    box-shadow:0 0 0 3px rgba(82,184,255,.08);
+}
+
+.scan-authorization{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin:15px 0 18px;
+    color:#9db1c8;
+    font-size:12px;
+}
+
+.scan-authorization input{
+    width:16px;
+    height:16px;
+}
+
+.scan-controls{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:14px;
+    align-items:end;
+}
+
+.scan-start-btn{
+    width:auto;
+    min-width:190px;
+    padding:13px 18px;
+    border:1px solid rgba(82,184,255,.35);
+    border-radius:12px;
+    background:linear-gradient(135deg,#258cff,#46c8ff);
+    color:#fff;
+    font-weight:800;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.scan-start-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(37,140,255,.22);
+}
+
+.scan-progress{
+    margin-top:18px;
+    padding:14px;
+    border-radius:14px;
+    background:rgba(82,184,255,.05);
+    border:1px solid rgba(82,184,255,.12);
+}
+
+.scan-progress-top{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:9px;
+    color:#a9bdd3;
+    font-size:12px;
+}
+
+.scan-progress-bar{
+    height:5px;
+    overflow:hidden;
+    border-radius:999px;
+    background:rgba(255,255,255,.08);
+}
+
+#scanProgressFill{
+    display:block;
+    width:8%;
+    height:100%;
+    border-radius:inherit;
+    background:linear-gradient(90deg,#258cff,#72d8ff);
+    transition:width .4s ease;
+}
+
+#scanIdText{
+    display:block;
+    margin-top:9px;
+    color:#71869f;
+    font-size:11px;
+}
+
+@media (max-width:700px){
+    .scan-card-header,
+    .scan-controls{
+        grid-template-columns:1fr;
+        flex-direction:column;
+    }
+
+    .scan-start-btn{
+        width:100%;
+    }
+}
 </style>
 
 </head>
@@ -480,6 +647,59 @@ pre{
         rows="7"
         placeholder="Example: How should I manually test a web app for broken access control in an authorized lab?"
     ></textarea>
+    <div class="scan-card">
+    <div class="scan-card-header">
+        <div>
+            <span class="scan-eyebrow">SECURITY ASSESSMENT</span>
+            <h3>Scan an Authorized Website</h3>
+            <p>Assess your website for security weaknesses and configuration risks.</p>
+        </div>
+        <span class="scan-status">READY</span>
+    </div>
+
+    <label class="scan-label" for="scanTarget">Target Website</label>
+
+    <input
+        id="scanTarget"
+        type="url"
+        placeholder="https://your-authorized-website.com"
+        autocomplete="url"
+    >
+
+    <label class="scan-authorization">
+        <input type="checkbox" id="scanAuthorized">
+        <span>I confirm that I am authorized to assess this website.</span>
+    </label>
+
+    <div class="scan-controls">
+        <div>
+            <label class="scan-label" for="scanProfile">Scan Profile</label>
+            <select id="scanProfile">
+                <option value="passive">Passive Assessment</option>
+                <option value="safe_active">Safe Active Assessment</option>
+            </select>
+        </div>
+
+        <button
+            type="button"
+            class="scan-start-btn"
+            onclick="startSecurityScan()"
+        >
+            Start Security Scan →
+        </button>
+    </div>
+
+    <div id="scanStatus" class="scan-progress" hidden>
+        <div class="scan-progress-top">
+            <span>Initializing assessment</span>
+            <span id="scanStatusText">Queued</span>
+        </div>
+        <div class="scan-progress-bar">
+            <span id="scanProgressFill"></span>
+        </div>
+        <small id="scanIdText"></small>
+    </div>
+</div>
 <div class="quick-checks">
     <span class="muted">Quick security checks</span>
     <button type="button" class="quick-btn" onclick="document.getElementById('q').value='How should I manually test a web application for SQL Injection in an authorized lab?'">SQL Injection</button>
