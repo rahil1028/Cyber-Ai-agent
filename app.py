@@ -734,7 +734,13 @@ window.analyze = async () => {
 
     }
 
+const analyzeBtn =
+    document.querySelector('button[onclick="analyze()"]');
 
+if(analyzeBtn){
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = "Analyzing…";
+}
     try{
 
         const token =
@@ -800,7 +806,10 @@ window.analyze = async () => {
     }
 
     catch(error){
-
+if(analyzeBtn){
+    analyzeBtn.disabled = false;
+    analyzeBtn.textContent = "Analyze with Gemini";
+}
         console.error(error);
 
         $("out").innerHTML =
