@@ -1022,7 +1022,7 @@ function clearPrompt(){
     }
 }
 
-window.analyze = async () => {
+
 window.analyze = async () => {
 
     const user =
