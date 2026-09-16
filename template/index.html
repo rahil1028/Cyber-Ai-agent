@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CyberLens AI</title>
+
+  <style>
+    :root{
+      --bg:#05070c;
+      --panel:rgba(15,20,32,.72);
+      --border:rgba(255,255,255,.09);
+      --text:#f5f7fb;
+      --muted:#929bad;
+      --cyan:#5ee7ff;
+      --violet:#8b7cff;
+      --green:#45e6a1;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      min-height:100vh;
+      color:var(--text);
+      font-family:Inter,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%,rgba(94,231,255,.13),transparent 30%),
+        radial-gradient(circle at 85% 15%,rgba(139,124,255,.14),transparent 30%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.2;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+      background-size:45px 45px;
+      mask-image:linear-gradient(to bottom,#000,transparent 90%);
+    }
+
+    .container{
+      width:min(1180px,calc(100% - 36px));
+      margin:auto;
+    }
+
+    nav{
+      height:82px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:-.5px;
+    }
+
+    .logo{
+      width:40px;
+      height:40px;
+      display:grid;
+      place-items:center;
+      border-radius:13px;
+      border:1px solid var(--border);
+      background:linear-gradient(135deg,
+        rgba(94,231,255,.2),
+        rgba(139,124,255,.2));
+      box-shadow:0 0 35px rgba(94,231,255,.08);
+    }
+
+    .status{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .dot{
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 14px var(--green);
+    }
+
+    .hero{
+      min-height:calc(100vh - 82px);
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:65px;
+      align-items:center;
+      padding:55px 0 100px;
+    }
+
+    .badge{
+      display:inline-flex;
+      padding:8px 13px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(255,255,255,.035);
+      color:#cbd4e2;
+      font-size:12px;
+      margin-bottom:25px;
+      backdrop-filter:blur(15px);
+    }
+
+    h1{
+      font-size:clamp(48px,7vw,84px);
+      line-height:.98;
+      letter-spacing:-5px;
+      max-width:750px;
+    }
+
+    .gradient{
+      background:linear-gradient(
+        100deg,
+        #fff 15%,
+        var(--cyan) 58%,
+        #a99cff
+      );
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .subtitle{
+      margin-top:26px;
+      max-width:650px;
+      color:var(--muted);
+      font-size:18px;
+      line-height:1.7;
+    }
+
+    .buttons{
+      display:flex;
+      gap:12px;
+      margin-top:34px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      padding:14px 20px;
+      border-radius:13px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.045);
+      color:white;
+      text-decoration:none;
+      font-weight:700;
+      transition:.25s;
+    }
+
+    .btn:hover{
+      transform:translateY(-3px);
+      border-color:rgba(94,231,255,.35);
+      background:rgba(255,255,255,.08);
+    }
+
+    .primary{
+      background:linear-gradient(
+        135deg,
+        rgba(94,231,255,.18),
+        rgba(139,124,255,.2)
+      );
+    }
+
+    .engine{
+      min-height:455px;
+      border:1px solid var(--border);
+      border-radius:28px;
+      background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.07),
+        rgba(255,255,255,.025)
+      );
+      backdrop-filter:blur(25px);
+      box-shadow:0 35px 100px rgba(0,0,0,.4);
+      overflow:hidden;
+    }
+
+    .engine-head{
+      padding:19px 21px;
+      display:flex;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border);
+      color:#aeb8c8;
+      font-size:12px;
+      letter-spacing:.5px;
+    }
+
+    .live{
+      color:var(--green);
+    }
+
+    .engine-body{
+      padding:28px;
+    }
+
+    .orb{
+      width:155px;
+      height:155px;
+      margin:8px auto 30px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(94,231,255,.3);
+      background:radial-gradient(
+        circle,
+        rgba(94,231,255,.14),
+        transparent 62%
+      );
+      box-shadow:
+        0 0 0 20px rgba(94,231,255,.025),
+        0 0 80px rgba(94,231,255,.13);
+      animation:pulse 3s infinite ease-in-out;
+    }
+
+    .orb-core{
+      width:82px;
+      height:82px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:#070a11;
+      border:1px solid rgba(255,255,255,.12);
+      font-size:30px;
+    }
+
+    .agent{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 0;
+      border-bottom:1px solid rgba(255,255,255,.055);
+      color:#c5cedb;
+      font-size:14px;
+    }
+
+    .agent-icon{
+      width:30px;
+      height:30px;
+      display:grid;
+      place-items:center;
+      border-radius:9px;
+      background:rgba(94,231,255,.08);
+      color:var(--cyan);
+      font-size:11px;
+      font-weight:800;
+    }
+
+    .features{
+      padding:30px 0 110px;
+    }
+
+    .section-title{
+      max-width:650px;
+      margin-bottom:35px;
+    }
+
+    .section-title h2{
+      font-size:clamp(32px,5vw,50px);
+      letter-spacing:-2.5px;
+    }
+
+    .section-title p{
+      margin-top:12px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+
+    .card{
+      min-height:220px;
+      padding:25px;
+      border:1px solid var(--border);
+      border-radius:21px;
+      background:rgba(255,255,255,.03);
+      transition:.25s;
+    }
+
+    .card:hover{
+      transform:translateY(-5px);
+      border-color:rgba(94,231,255,.25);
+    }
+
+    .icon{
+      font-size:25px;
+      margin-bottom:22px;
+    }
+
+    .card h3{
+      margin-bottom:10px;
+      font-size:17px;
+    }
+
+    .card p{
+      color:var(--muted);
+      line-height:1.65;
+      font-size:14px;
+    }
+
+    footer{
+      border-top:1px solid var(--border);
+      padding:30px 0 45px;
+      color:#687386;
+      font-size:13px;
+    }
+
+    @keyframes pulse{
+      0%,100%{
+        transform:scale(1);
+      }
+      50%{
+        transform:scale(1.04);
+      }
+    }
+
+    @media(max-width:850px){
+      .hero{
+        grid-template-columns:1fr;
+        gap:45px;
+      }
+
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:520px){
+      .container{
+        width:calc(100% - 26px);
+      }
+
+      .status{
+        display:none;
+      }
+
+      h1{
+        letter-spacing:-3px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <nav>
+      <div class="brand">
+        <div class="logo">◈</div>
+        CyberLens AI
+      </div>
+
+      <div class="status">
+        <span class="dot"></span>
+        AI Security Engine Online
+      </div>
+    </nav>
+
+    <main>
+
+      <section class="hero">
+
+        <div>
+
+          <div class="badge">
+            ✦ AI-POWERED SECURITY INTELLIGENCE
+          </div>
+
+          <h1>
+            Understand security.
+            <span class="gradient">Think with AI.</span>
+          </h1>
+
+          <p class="subtitle">
+            CyberLens AI transforms security scenarios into structured
+            intelligence, risk insights and actionable remediation using
+            modern AI and agent-based workflows.
+          </p>
+
+          <div class="buttons">
+            <a href="#features" class="btn primary">
+              Start AI Analysis →
+            </a>
+
+            <a href="#features" class="btn">
+              Explore Platform
+            </a>
+          </div>
+
+        </div>
+
+        <div class="engine">
+
+          <div class="engine-head">
+            <span>CYBERLENS AI ENGINE</span>
+            <span class="live">● LIVE</span>
+          </div>
+
+          <div class="engine-body">
+
+            <div class="orb">
+              <div class="orb-core">✦</div>
+            </div>
+
+            <div class="agent">
+              <div class="agent-icon">AI</div>
+              AI Orchestrator initialized
+            </div>
+
+            <div class="agent">
+              <div class="agent-icon">R</div>
+              Security reasoning engine ready
+            </div>
+
+            <div class="agent">
+              <div class="agent-icon">✓</div>
+              Threat analysis pipeline ready
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="features" id="features">
+
+        <div class="section-title">
+          <h2>Built for intelligent security workflows.</h2>
+
+          <p>
+            CyberLens AI is designed around AI-assisted security analysis,
+            specialized agents and actionable security intelligence.
+          </p>
+        </div>
+
+        <div class="grid">
+
+          <div class="card">
+            <div class="icon">◉</div>
+            <h3>AI Security Analysis</h3>
+            <p>
+              Analyze security scenarios and convert complex information
+              into structured findings and recommendations.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="icon">◇</div>
+            <h3>Agentic Security</h3>
+            <p>
+              Build specialized AI agents for vulnerability analysis,
+              risk reasoning, remediation and reporting.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="icon">▣</div>
+            <h3>Security Intelligence</h3>
+            <p>
+              Present findings through clear dashboards, reports and
+              actionable security insights.
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer>
+      © 2026 CyberLens AI · AI-powered security intelligence
+    </footer>
+
+  </div>
+
+</body>
+              </html>
