@@ -1105,7 +1105,52 @@ def user_required(function):
 
 
     return wrapper
+# ============================================================
+# SECURITY SCAN API
+# ============================================================
 
+@app.post("/api/scan")
+@user_required
+def create_scan():
+    data = request.get_json(silent=True) or {}
+
+    target_url = str(data.get("target_url", "")).strip()
+    profile = str(data.get("profile", "passive")).strip().lower()
+    authorized = data.get("authorized", False)
+
+    if not authorized:
+        return jsonify(
+            error="Authorization confirmation is required."
+        ), 400
+
+    if profile not in {"passive", "safe_active"}:
+        return jsonify(
+            error="Invalid scan profile."
+        ), 400
+
+    valid, result = validate_target_url(target_url)
+
+    if not valid:
+        return jsonify(
+            error=result
+        ), 400
+
+    job = ScanJob(
+        target_url=result,
+        profile=profile
+    )
+
+    job_data = job.to_dict()
+    job_data["user_id"] = request.user["uid"]
+
+    db.collection("scan_jobs").document(
+        job.scan_id
+    ).set(job_data)
+
+    return jsonify({
+        "success": True,
+        "scan": job_data
+    }), 201
 
 # ============================================================
 # GEMINI ANALYSIS
