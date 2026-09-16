@@ -1437,7 +1437,27 @@ def create_scan():
         "success": True,
         "scan": job_data
     }), 201
+@app.get("/api/scan/<scan_id>")
+@user_required
+def get_scan_status(scan_id):
+    doc = db.collection("scan_jobs").document(scan_id).get()
 
+    if not doc.exists:
+        return jsonify(
+            error="Scan not found."
+        ), 404
+
+    scan = doc.to_dict()
+
+    if scan.get("user_id") != request.user["uid"]:
+        return jsonify(
+            error="Access denied."
+        ), 403
+
+    return jsonify({
+        "success": True,
+        "scan": scan
+    }), 200
 # ============================================================
 # GEMINI ANALYSIS
 # ============================================================
