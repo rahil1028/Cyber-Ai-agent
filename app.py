@@ -788,7 +788,10 @@ if(analyzeBtn){
 
 
             history();
-
+if(analyzeBtn){
+    analyzeBtn.disabled = false;
+    analyzeBtn.textContent = "Analyze with Gemini";
+}
         }
 
         else{
