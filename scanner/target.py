@@ -5,7 +5,8 @@ Validates scan targets before a security assessment is created.
 """
 
 from urllib.parse import urlparse
-
+import ipaddress
+import socket
 
 ALLOWED_SCHEMES = {"http", "https"}
 
@@ -42,7 +43,31 @@ def validate_target_url(url: str) -> tuple[bool, str]:
         return False, "URLs containing embedded credentials are not allowed."
 
     hostname = parsed.hostname
+if hostname.lower() in {"localhost", "localhost.localdomain"}:
+        return False, "Localhost targets are not allowed."
 
+    try:
+        resolved_addresses = {
+            info[4][0]
+            for info in socket.getaddrinfo(hostname, None)
+        }
+    except socket.gaierror:
+        return False, "Target hostname could not be resolved."
+
+    for address in resolved_addresses:
+        try:
+            ip = ipaddress.ip_address(address)
+        except ValueError:
+            continue
+
+        if (
+            ip.is_private
+            or ip.is_loopback
+            or ip.is_link_local
+            or ip.is_reserved
+            or ip.is_multicast
+        ):
+            return False, "Private or local network targets are not allowed."
     if not hostname:
         return False, "Target hostname is missing."
 
