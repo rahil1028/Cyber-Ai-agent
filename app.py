@@ -1434,9 +1434,9 @@ def create_scan():
             error="Authorization confirmation is required."
         ), 400
 
-    if profile not in {"passive", "safe_active"}:
+   if profile != "passive":
         return jsonify(
-            error="Invalid scan profile."
+            error="Safe Active Assessment is not available yet."
         ), 400
 
     valid, result = validate_target_url(target_url)
