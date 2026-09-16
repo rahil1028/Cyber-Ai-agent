@@ -261,7 +261,32 @@ pre{
     }
 
 }
+.quick-checks{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    margin:10px 0 14px;
+}
 
+.quick-btn{
+    width:auto;
+    background:rgba(82,184,255,.08);
+    border:1px solid rgba(82,184,255,.22);
+    color:#a9d9ff;
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.quick-btn:hover{
+    background:rgba(82,184,255,.16);
+    border-color:rgba(82,184,255,.45);
+    transform:translateY(-1px);
+}
 </style>
 
 </head>
@@ -406,7 +431,13 @@ pre{
         rows="7"
         placeholder="Example: How should I manually test a web app for broken access control in an authorized lab?"
     ></textarea>
-
+<div class="quick-checks">
+    <span class="muted">Quick security checks</span>
+    <button type="button" class="quick-btn" onclick="document.getElementById('q').value='How should I manually test a web application for SQL Injection in an authorized lab?'">SQL Injection</button>
+    <button type="button" class="quick-btn" onclick="document.getElementById('q').value='How should I manually test a web application for Cross-Site Scripting (XSS) in an authorized lab?'">XSS</button>
+    <button type="button" class="quick-btn" onclick="document.getElementById('q').value='How should I manually test a web application for Broken Access Control in an authorized lab?'">Access Control</button>
+    <button type="button" class="quick-btn" onclick="document.getElementById('q').value='How should I review security headers of an authorized web application?'">Security Headers</button>
+</div>
 
     <div
         class="row"
