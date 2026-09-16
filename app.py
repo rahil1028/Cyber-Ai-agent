@@ -1395,7 +1395,31 @@ def user_required(function):
 # ============================================================
 # SECURITY SCAN API
 # ============================================================
+def run_scan_job(scan_id: str, target_url: str) -> None:
+    """Run a scan in the background and update its Firestore job."""
 
+    job_ref = db.collection("scan_jobs").document(scan_id)
+
+    try:
+        job_ref.update({
+            "status": "scanning"
+        })
+
+        result = run_assessment(target_url)
+
+        job_ref.update({
+            "status": "completed",
+            "evidence": result["evidence"],
+            "findings": result["findings"],
+            "findings_count": result["findings_count"],
+            "error": None,
+        })
+
+    except Exception as exc:
+        job_ref.update({
+            "status": "failed",
+            "error": str(exc),
+        })
 @app.post("/api/scan")
 @user_required
 def create_scan():
@@ -1433,7 +1457,11 @@ def create_scan():
     db.collection("scan_jobs").document(
         job.scan_id
     ).set(job_data)
-
+threading.Thread(
+        target=run_scan_job,
+        args=(job.scan_id, result),
+        daemon=True,
+    ).start()
     return jsonify({
         "success": True,
         "scan": job_data
