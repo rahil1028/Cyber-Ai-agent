@@ -8,7 +8,8 @@ from firebase_admin import auth, firestore, credentials
 from google import genai
 from scanner.target import validate_target_url
 from scanner.job import ScanJob
-
+from scanner.engine import run_assessment
+import threading
 app = Flask(__name__)
 
 
