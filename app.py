@@ -286,6 +286,49 @@ pre{
     background:rgba(82,184,255,.16);
     border-color:rgba(82,184,255,.45);
     transform:translateY(-1px);
+.input-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin:8px 2px 14px;
+    color:#7f93aa;
+    font-size:12px;
+}
+
+.input-hint{
+    opacity:.8;
+}
+
+.input-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+#charCount{
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+}
+
+.clear-btn{
+    width:auto;
+    padding:6px 10px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:8px;
+    background:rgba(255,255,255,.04);
+    color:#aebed0;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.clear-btn:hover{
+    background:rgba(82,184,255,.10);
+    border-color:rgba(82,184,255,.30);
+    color:#d9efff;
+    transform:translateY(-1px);
 }
 </style>
 
@@ -437,8 +480,24 @@ pre{
     <button type="button" class="quick-btn" onclick="document.getElementById('q').value='How should I manually test a web application for Cross-Site Scripting (XSS) in an authorized lab?'">XSS</button>
     <button type="button" class="quick-btn" onclick="document.getElementById('q').value='How should I manually test a web application for Broken Access Control in an authorized lab?'">Access Control</button>
     <button type="button" class="quick-btn" onclick="document.getElementById('q').value='How should I review security headers of an authorized web application?'">Security Headers</button>
+    
 </div>
+<div class="input-meta">
+    <span class="input-hint">
+        Ctrl + Enter to analyze
+    </span>
 
+    <div class="input-actions">
+        <span id="charCount">0 / 2000</span>
+        <button
+            type="button"
+            class="clear-btn"
+            onclick="clearPrompt()"
+        >
+            Clear
+        </button>
+    </div>
+</div>
     <div
         class="row"
         style="justify-content:space-between;align-items:center"
@@ -705,7 +764,22 @@ window.logout = async () => {
 
 };
 
+const promptBox = $("q");
+const charCount = $("charCount");
 
+if(promptBox && charCount){
+    promptBox.addEventListener("input", () => {
+        charCount.textContent =
+            promptBox.value.length + " / 2000";
+    });
+}if(promptBox){
+    promptBox.addEventListener("keydown", (event) => {
+        if(event.ctrlKey && event.key === "Enter"){
+            event.preventDefault();
+            analyze();
+        }
+    });
+}
 window.analyze = async () => {
 
     const user =
