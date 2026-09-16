@@ -330,6 +330,11 @@ pre{
     color:#d9efff;
     transform:translateY(-1px);
 }
+.analyze-loading{
+    opacity:.7;
+    cursor:wait !important;
+    transform:scale(.98);
+}
 </style>
 
 </head>
@@ -780,6 +785,22 @@ if(promptBox && charCount){
         }
     });
 }
+function clearPrompt(){
+    const promptBox = $("q");
+
+    if(promptBox){
+        promptBox.value = "";
+        promptBox.focus();
+    }
+
+    const charCount = $("charCount");
+
+    if(charCount){
+        charCount.textContent = "0 / 2000";
+    }
+}
+
+window.analyze = async () => {
 window.analyze = async () => {
 
     const user =
