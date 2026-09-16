@@ -1245,7 +1245,73 @@ function esc(value){
 
 
 boot();
+async function startSecurityScan(){
+    const target = document.getElementById("scanTarget").value.trim();
+    const authorized = document.getElementById("scanAuthorized").checked;
+    const profile = document.getElementById("scanProfile").value;
 
+    const statusBox = document.getElementById("scanStatus");
+    const statusText = document.getElementById("scanStatusText");
+    const scanIdText = document.getElementById("scanIdText");
+    const progressFill = document.getElementById("scanProgressFill");
+
+    if(!target){
+        alert("Enter an authorized website URL.");
+        return;
+    }
+
+    if(!authorized){
+        alert("Please confirm that you are authorized to assess this website.");
+        return;
+    }
+
+    statusBox.hidden = false;
+    statusText.textContent = "Submitting...";
+    progressFill.style.width = "20%";
+
+    try{
+        const user = A.currentUser;
+
+        if(!user){
+            statusText.textContent = "Sign in required";
+            return;
+        }
+
+        const token = await user.getIdToken();
+
+        const response = await fetch("/api/scan", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                target_url: target,
+                profile: profile,
+                authorized: true
+            })
+        });
+
+        const data = await response.json();
+
+        if(!response.ok){
+            throw new Error(data.error || "Unable to start scan.");
+        }
+
+        statusText.textContent = "Queued";
+        progressFill.style.width = "35%";
+
+        if(data.scan && data.scan.scan_id){
+            scanIdText.textContent = "Scan ID: " + data.scan.scan_id;
+        }
+
+    }catch(error){
+        console.error(error);
+        statusText.textContent = "Failed";
+        scanIdText.textContent = error.message;
+        progressFill.style.width = "0%";
+    }
+}
 </script>
 
 </body>
