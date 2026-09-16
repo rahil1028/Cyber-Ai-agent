@@ -261,7 +261,130 @@ pre{
     }
 
 }
+/* ===== CyberLens AI Premium Upgrade ===== */
 
+.nav{
+    padding:16px 20px;
+    margin-bottom:10px;
+    background:rgba(13,26,43,.72);
+    border:1px solid rgba(82,184,255,.14);
+    border-radius:18px;
+    backdrop-filter:blur(14px);
+}
+
+.logo{
+    letter-spacing:-.5px;
+    text-shadow:0 0 20px rgba(82,184,255,.25);
+}
+
+.badge{
+    background:rgba(82,184,255,.06);
+    backdrop-filter:blur(8px);
+}
+
+.hero{
+    min-height:70vh;
+}
+
+.hero > div:first-child{
+    animation:fadeUp .7s ease both;
+}
+
+.hero .card{
+    animation:floatCard 5s ease-in-out infinite;
+    border-color:rgba(82,184,255,.22);
+}
+
+.shield{
+    border-radius:26px;
+    box-shadow:
+        0 0 60px rgba(82,184,255,.12),
+        inset 0 0 50px rgba(139,92,255,.08);
+}
+
+button{
+    transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;
+    box-shadow:0 8px 24px rgba(90,84,255,.22);
+}
+
+button:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.12);
+    box-shadow:0 12px 30px rgba(90,84,255,.35);
+}
+
+button:active{
+    transform:translateY(0);
+}
+
+input:focus,
+textarea:focus{
+    outline:none;
+    border-color:#52b8ff;
+    box-shadow:0 0 0 3px rgba(82,184,255,.10);
+}
+
+.card{
+    transition:border-color .25s ease,transform .25s ease;
+}
+
+.history .item{
+    margin:8px 0;
+    padding:14px;
+    border:1px solid #203451;
+    border-radius:12px;
+    background:rgba(8,21,34,.55);
+    transition:transform .2s ease,border-color .2s ease;
+}
+
+.history .item:hover{
+    transform:translateX(4px);
+    border-color:rgba(82,184,255,.4);
+}
+
+pre{
+    border:1px solid rgba(82,184,255,.12);
+    box-shadow:inset 0 0 30px rgba(0,0,0,.18);
+}
+
+@keyframes fadeUp{
+    from{
+        opacity:0;
+        transform:translateY(18px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@keyframes floatCard{
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-8px);
+    }
+}
+
+@media(max-width:800px){
+    .nav{
+        padding:13px 15px;
+    }
+
+    .hero{
+        min-height:auto;
+    }
+
+    button{
+        width:100%;
+    }
+
+    .row button{
+        flex:1;
+        min-width:140px;
+    }
+}
 </style>
 
 </head>
