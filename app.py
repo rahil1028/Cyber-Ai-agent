@@ -1,4 +1,4 @@
-import os
+ import os
 import json
 from functools import wraps
 
@@ -1428,7 +1428,6 @@ def run_scan_job(scan_id: str, target_url: str) -> None:
 @user_required
 def create_scan():
     data = request.get_json(silent=True) or {}
-
     target_url = str(data.get("target_url", "")).strip()
     profile = str(data.get("profile", "passive")).strip().lower()
     authorized = data.get("authorized", False)
@@ -1438,7 +1437,7 @@ def create_scan():
             error="Authorization confirmation is required."
         ), 400
 
-   if profile != "passive":
+    if profile != "passive":
         return jsonify(
             error="Safe Active Assessment is not available yet."
         ), 400
@@ -1461,11 +1460,13 @@ def create_scan():
     db.collection("scan_jobs").document(
         job.scan_id
     ).set(job_data)
-threading.Thread(
+
+    threading.Thread(
         target=run_scan_job,
         args=(job.scan_id, result),
         daemon=True,
     ).start()
+
     return jsonify({
         "success": True,
         "scan": job_data
