@@ -43,7 +43,7 @@ def validate_target_url(url: str) -> tuple[bool, str]:
         return False, "URLs containing embedded credentials are not allowed."
 
     hostname = parsed.hostname
-if hostname.lower() in {"localhost", "localhost.localdomain"}:
+    if hostname.lower() in {"localhost", "localhost.localdomain"}:
         return False, "Localhost targets are not allowed."
 
     try:
